@@ -1,4 +1,4 @@
-import { ADD_TODO, DELETE_TODO, EDIT_TODO, COMPLETE_TODO, COMPLETE_ALL_TODOS, CLEAR_COMPLETED } from "../constants/ActionTypes";
+import { ADD_TODO, DELETE_TODO, EDIT_TODO, COMPLETE_TODO, COMPLETE_ALL_TODOS, CLEAR_COMPLETED, UNDO, REDO } from "../constants/ActionTypes";
 
 const initialState = {
   todoList: [
@@ -97,6 +97,24 @@ export default function todos(state = initialState, action) {
       };
       newState.historyList = [...newState.historyList.slice(0, newState.currentIndex + 1), [...newState.todoList]];
       newState.currentIndex = newState.historyList.length - 1;
+
+      return newState;
+
+    case UNDO:
+      newState = {
+        ...state,
+        currentIndex: state.currentIndex - 1 >= 0 ? state.currentIndex - 1 : 0,
+      };
+      newState.todoList = [...newState.historyList[newState.currentIndex]];
+
+      return newState;
+
+    case REDO:
+      newState = {
+        ...state,
+        currentIndex: state.currentIndex + 1 < state.historyList.length ? state.currentIndex + 1 : state.historyList.length - 1,
+      };
+      newState.todoList = [...newState.historyList[newState.currentIndex]];
 
       return newState;
 
